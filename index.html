@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>إدارة أسطول المركبات</title>
+<style>
+:root{--bg:#090e18;--panel:#121b2b;--panel2:#172338;--line:#2a3a54;--gold:#e9ad42;--text:#eef3ff;--muted:#9baac1;--green:#20c77a;--red:#ff565d;--amber:#f2a51a;--blue:#438cff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 75% -10%,#26334a 0,transparent 35%),var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif}
+header{height:190px;background:linear-gradient(90deg,rgba(7,12,21,.88),rgba(7,12,21,.28)),linear-gradient(135deg,#1c2a44,#4a3716);display:flex;align-items:flex-end;padding:28px 34px;border-bottom:1px solid var(--line)}
+.hero{max-width:1300px;width:100%;margin:auto;display:flex;justify-content:space-between;align-items:end}.hero h1{font-size:30px;margin:0 0 8px;color:#ffd17b}.hero p{margin:0;color:#e4e9f2}.hero small{color:#c4cede}
+.layout{max-width:1500px;margin:auto;display:grid;grid-template-columns:220px 1fr;gap:18px;padding:20px}
+aside,.panel,.stat{background:linear-gradient(145deg,rgba(24,36,56,.96),rgba(12,19,31,.98));border:1px solid var(--line);border-radius:15px;box-shadow:0 12px 30px #0003}
+aside{padding:18px;height:max-content;position:sticky;top:12px}aside h2{font-size:17px;color:var(--gold);margin:4px 8px 22px}nav button{width:100%;text-align:right;background:transparent;color:var(--text);border:0;padding:14px 12px;border-radius:10px;font-size:15px;cursor:pointer}nav button.active,nav button:hover{background:#6e5126;color:#fff1d1}
+main{min-width:0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}.stat{padding:18px}.stat span{color:var(--muted);font-size:14px}.stat strong{display:block;font-size:29px;margin-top:9px}.gold{color:var(--gold)}.green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}
+.columns{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:14px;margin-bottom:16px}.panel{padding:18px}.panel h3{margin:0 0 15px;font-size:17px}.bars{display:flex;gap:12px;align-items:end;height:120px;padding:8px 10px 0}.bar{flex:1;text-align:center;color:var(--muted);font-size:12px}.bar i{display:block;border-radius:7px 7px 2px 2px;background:linear-gradient(#f6c66c,#b77c22);margin:0 auto 8px;width:70%;min-height:8px}.bar b{display:block;color:var(--text);margin-bottom:5px}
+.notice{border:1px solid #8b672d;background:#2a2115;padding:14px;border-radius:12px;color:#ffd58b;line-height:1.8}
+.toolbar{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:14px}.toolbar h3{margin:0}.actions{display:flex;gap:8px;flex-wrap:wrap}
+button.primary,.btn{border:1px solid #c18b30;background:linear-gradient(120deg,#f4c66e,#c58a2c);color:#16120a;padding:10px 15px;border-radius:9px;font-weight:bold;cursor:pointer}
+.btn.secondary{background:#1b2b42;color:#eaf1ff;border-color:#405675}.btn.danger{background:#421d25;color:#ffb3b7;border-color:#87404a}
+input,select,textarea{background:#0c1421;border:1px solid #344760;color:var(--text);padding:11px;border-radius:8px;font:inherit;width:100%}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:9px;margin-bottom:12px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:11px}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:13px 11px;border-bottom:1px solid #26364d;text-align:right;font-size:13px}th{background:#1b293e;color:#d9e4f7}tr:nth-child(even){background:#ffffff06}
+.pill{display:inline-block;padding:5px 10px;border-radius:30px;font-size:12px;font-weight:bold}.pill.ok{background:#124c37;color:#7df0b9}.pill.bad{background:#5a2229;color:#ffb2b5}.pill.warn{background:#594019;color:#ffd27a}
+.lower{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}.empty{color:var(--muted);padding:20px;text-align:center}
+.modal{display:none;position:fixed;inset:0;background:#000a;z-index:5;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.dialog{width:min(620px,100%);background:#111c2d;border:1px solid #52627b;border-radius:16px;padding:22px;max-height:90vh;overflow:auto}.dialog h2{margin-top:0;color:var(--gold)}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}.field.full{grid-column:1/-1}.dialog .actions{justify-content:flex-start;margin-top:18px}
+footer{text-align:center;color:#73839b;padding:22px;font-size:12px}
+@media(max-width:950px){.layout{grid-template-columns:minmax(0,1fr);padding:12px}aside{position:static}nav{display:flex;overflow:auto}nav button{white-space:nowrap;width:auto}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.columns{grid-template-columns:minmax(0,1fr)}.lower{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){header{height:155px;padding:18px}.hero h1{font-size:23px}.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:24px}.filters,.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+.pill.mid{background:#17325a;color:#9cc4ff}.pill.low{background:#243044;color:#c2cee0}td small{color:var(--muted)}.late{color:var(--red);font-weight:bold}.fstate{padding:6px;min-width:125px}td .btn{margin:2px 0}html,body{max-width:100%;overflow-x:hidden}.layout>*,.panel,.stat{min-width:0}.hero{gap:10px}.hero small{white-space:nowrap}.fab{position:fixed;bottom:18px;left:18px;z-index:4;width:56px;height:56px;border-radius:50%;font-size:28px;padding:0;box-shadow:0 8px 20px #0008}.thumb{display:block;width:64px;height:48px;object-fit:cover;border-radius:6px;margin-top:6px;cursor:pointer;border:1px solid var(--line)}#imgView{max-width:100%;max-height:75vh;display:block;margin:auto;border-radius:8px}.ev{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.ev b{color:var(--gold);margin-left:8px}@media print{header,aside,.fab,.modal,footer,.actions{display:none!important}body{background:#fff}*{color:#000!important;box-shadow:none!important}.layout{display:block;padding:0}.panel,.notice,.stat{background:#fff!important}.table-wrap{overflow:visible}}.printhead,.kpis,.printfoot{display:none}@media print{@page{size:A4;margin:12mm}.printhead{display:block!important;text-align:center;margin-bottom:12px;border-bottom:2px solid #000;padding-bottom:8px}.printhead h1{margin:0 0 4px;font-size:22px}.filters{display:none!important}table{min-width:0!important}th{background:#eee!important;border-bottom:1px solid #000}td,th{border-bottom:1px solid #bbb;font-size:11px;padding:6px 5px}.panel,.notice{border:1px solid #999!important;border-radius:6px}.lower{display:block}.lower .panel{margin-bottom:12px}.table-wrap{border:0}.panel{break-inside:avoid}}@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.printhead{display:flex!important;justify-content:space-between;align-items:center;background:#16233a!important;border:0;border-bottom:5px solid #e9ad42;border-radius:10px;padding:16px 20px;margin-bottom:14px;text-align:right}
+.printhead h1{color:#ffd17b!important;font-size:24px;margin:0}#printMeta{color:#e4e9f2!important;font-size:12px}
+#repTop{display:none!important}
+.kpis{display:grid!important;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+.kpi{border:1px solid #cfd6e2;border-top:4px solid var(--c);border-radius:8px;padding:8px 4px;text-align:center;background:#f7f9fc!important}
+.kpi b{display:block;font-size:24px;color:var(--c)!important}.kpi span{font-size:11px;color:#444!important}
+.panel{border:0!important;padding:0!important;margin-bottom:16px;background:#fff!important}
+.panel h3{color:#16233a!important;border-right:5px solid #e9ad42;padding-right:8px;font-size:15px;margin:0 0 8px}
+.table-wrap{border:1px solid #cfd6e2!important;border-radius:8px;overflow:hidden}
+th{background:#16233a!important;color:#fff!important;border:0!important}
+tr{break-inside:avoid}tr:nth-child(even) td{background:#f3f6fb!important}
+.pill{font-size:10px;padding:2px 9px;border:1px solid}
+.pill.ok{background:#d8f5e6!important;color:#0b6b3f!important;border-color:#20c77a}.pill.bad{background:#fde0e2!important;color:#a1202a!important;border-color:#ff565d}.pill.warn{background:#fff0cf!important;color:#8a5a00!important;border-color:#f2a51a}.pill.mid{background:#dbe9ff!important;color:#1d4f9f!important;border-color:#438cff}.pill.low{background:#eceff4!important;color:#444!important;border-color:#9aa7ba}
+.printfoot{display:flex!important;justify-content:space-between;margin-top:30px;padding-top:10px;border-top:1px dashed #999;font-size:12px}}</style></head>
+<body>
+<header><div class="hero"><div><h1>إدارة أسطول المركبات</h1><p>متابعة • أعطال • صيانة • تقارير</p></div><small>لوحة التحكم الرئيسية</small></div></header>
+<div class="layout">
+<aside><h2>◈ إدارة الأسطول</h2><nav>
+<button class="active" data-s="dashboard" onclick="showSection('dashboard')">⌂　الرئيسية</button>
+<button data-s="fleet" onclick="showSection('fleet')">▣　جميع المركبات</button>
+<button data-s="faults" onclick="showSection('faults')">⚠　الأعطال والصيانة</button>
+<button data-s="drivers" onclick="showSection('drivers')">☺　السائقون</button>
+<button data-s="reports" onclick="showSection('reports')">▥　التقارير والإحصائيات</button>
+</nav><div id="syncState" style="font-size:12px;color:var(--muted);padding:8px 6px"></div></aside>
+<main>
+<section id="dashboard">
+<div class="actions" style="margin-bottom:14px"><button class="primary" onclick="openVehicle()">＋ إضافة مركبة</button><button class="btn secondary" onclick="openFault()">＋ تسجيل عطل</button></div>
+<div class="stats">
+<div class="stat"><span>إجمالي المركبات</span><strong id="total">0</strong></div>
+<div class="stat"><span>المركبات العاملة</span><strong class="green" id="working">0</strong></div>
+<div class="stat"><span>المركبات المتعطلة</span><strong class="red" id="broken">0</strong></div>
+<div class="stat"><span>تحتاج متابعة صيانة</span><strong class="amber" id="maintenance">0</strong></div>
+</div>
+<div class="columns">
+<div class="panel"><h3>حالة الأسطول</h3><div id="fleetSummary" class="notice">أضف المركبات لتظهر الإحصائيات هنا.</div></div>
+<div class="panel"><h3>أنواع المركبات</h3><div id="typeBars" class="bars"></div></div>
+<div class="panel"><h3>تنبيهات المتابعة</h3><div class="notice" id="alerts">لا توجد تنبيهات مسجلة بعد.</div></div>
+</div>
+<div class="panel"><div class="toolbar"><h3>آخر الأعطال المسجلة</h3><button class="btn secondary" onclick="showSection('faults')">عرض سجل الأعطال</button></div><div id="recentFaults"></div></div>
+<div class="lower"><div class="panel"><h3>ملاحظات مهمة</h3><p>سجّل العطل فور ظهوره، وحدد المسؤول والإجراء المطلوب، ثم حدّث حالة الإصلاح.</p></div><div class="panel"><h3>حفظ البيانات</h3><p>يتم حفظ البيانات تلقائياً على هذا الجهاز والمتصفح. استخدم «تصدير البيانات» للاحتفاظ بنسخة احتياطية.</p></div></div>
+</section>
+<section id="fleet" style="display:none">
+<div class="panel"><div class="toolbar"><h3>قائمة المركبات</h3><div class="actions"><button class="primary" onclick="openVehicle()">＋ إضافة مركبة</button><button class="btn secondary" onclick="exportData()">تصدير البيانات</button><button class="btn secondary" onclick="$('imp').click()">استيراد نسخة</button><input type="file" id="imp" accept=".json" hidden onchange="importData(this)"></div></div>
+<div class="filters"><input id="search" placeholder="ابحث برقم اللوحة أو اسم المركبة..." oninput="render()"><select id="statusFilter" onchange="render()"><option value="">كل الحالات</option><option>عاملة</option><option>متعطلة</option><option>في الصيانة</option></select><select id="typeFilter" onchange="render()"><option value="">كل الأنواع</option><option>سيارة</option><option>شاحنة</option><option>وايت</option><option>معدات</option><option>أخرى</option></select></div>
+<div class="table-wrap"><table><thead><tr><th>رقم المركبة / اللوحة</th><th>النوع</th><th>الموديل</th><th>الحالة</th><th>آخر صيانة</th><th>الصيانة القادمة</th><th>الإجراء</th></tr></thead><tbody id="vehiclesBody"></tbody></table></div></div>
+</section>
+<section id="faults" style="display:none"><div class="panel"><div class="toolbar"><h3>سجل الأعطال والإجراءات</h3><button class="primary" onclick="openFault()">＋ تسجيل عطل</button></div><div class="table-wrap"><table><thead><tr><th>المركبة</th><th>تاريخ العطل</th><th>وصف العطل</th><th>الأهمية</th><th>الإجراء المطلوب</th><th>المسؤول</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody id="faultsBody"></tbody></table></div></div></section>
+<section id="drivers" style="display:none"><div class="panel"><div class="toolbar"><h3>السائقون</h3><button class="primary" onclick="openDriver()">＋ إضافة سائق</button></div><div class="table-wrap"><table style="min-width:640px"><thead><tr><th>الاسم</th><th>الجوال</th><th>انتهاء الرخصة</th><th>المركبات</th><th>الإجراء</th></tr></thead><tbody id="driversBody"></tbody></table></div></div></section>
+<section id="reports" style="display:none"><div class="printhead"><h1>تقرير أسطول المركبات</h1><div id="printMeta"></div></div><div class="kpis" id="kpis"></div><div class="panel" id="repTop"><div class="toolbar"><h3>التقارير</h3><div class="actions"><button class="btn secondary" onclick="exportXlsVehicles()">Excel: المركبات</button><button class="btn secondary" onclick="exportXlsFaults()">Excel: الأعطال</button><button class="primary" onclick="printReport()">طباعة / PDF</button></div></div>
+<div class="filters" style="grid-template-columns:1fr 1fr"><div class="field"><label>من تاريخ</label><input type="date" id="rFrom" onchange="render()"></div><div class="field"><label>إلى تاريخ</label><input type="date" id="rTo" onchange="render()"></div></div>
+<div id="reportText" class="notice"></div></div>
+<div class="panel" style="margin-top:16px"><h3>حالة المركبات</h3><div class="table-wrap"><table style="min-width:640px"><thead><tr><th>اللوحة</th><th>المركبة</th><th>النوع</th><th>السائق</th><th>الحالة</th><th>آخر صيانة</th><th>الصيانة القادمة</th></tr></thead><tbody id="repVeh"></tbody></table></div></div>
+<div class="lower"><div class="panel"><h3>الأعطال حسب الأهمية</h3><div id="repBars" class="bars"></div></div><div class="panel"><h3>أعطال الفترة</h3><div class="table-wrap"><table style="min-width:520px"><thead><tr><th>المركبة</th><th>التاريخ</th><th>الوصف</th><th>الأهمية</th><th>الحالة</th></tr></thead><tbody id="repBody"></tbody></table></div></div></div><div class="printfoot"><span>إعداد: ....................</span><span>اعتماد: ....................</span></div></section>
+</main></div><footer>نظام متابعة أسطول المركبات — نموذج أولي قابل للتطوير</footer>
+<button class="primary fab" onclick="openVehicle()" aria-label="إضافة مركبة">＋</button>
+<div class="modal" id="vehicleModal"><div class="dialog"><h2 id="vTitle">إضافة مركبة جديدة</h2><div class="formgrid">
+<div class="field"><label>رقم المركبة / اللوحة *</label><input id="vPlate" placeholder="مثال: 4587"></div>
+<div class="field"><label>اسم أو وصف المركبة</label><input id="vName" placeholder="مثال: وايت المياه"></div>
+<div class="field"><label>نوع المركبة</label><select id="vType"><option>سيارة</option><option>شاحنة</option><option>وايت</option><option>معدات</option><option>أخرى</option></select></div>
+<div class="field"><label>الموديل / السنة</label><input id="vModel" placeholder="مثال: 2022"></div>
+<div class="field"><label>الحالة الحالية</label><select id="vStatus"><option>عاملة</option><option>متعطلة</option><option>في الصيانة</option></select></div>
+<div class="field"><label>آخر صيانة</label><input id="vService" type="date"></div>
+<div class="field"><label>موعد الصيانة القادمة</label><input id="vNext" type="date"></div>
+<div class="field"><label>السائق</label><select id="vDriver"></select></div>
+<div class="field full"><label>ملاحظات</label><textarea id="vNotes" rows="2"></textarea></div></div><div class="actions"><button class="primary" onclick="saveVehicle()">حفظ المركبة</button><button class="btn secondary" onclick="closeModal('vehicleModal')">إلغاء</button></div></div></div>
+<div class="modal" id="faultModal"><div class="dialog"><h2>تسجيل عطل</h2><div class="formgrid">
+<div class="field"><label>المركبة</label><select id="fVehicle"></select></div><div class="field"><label>تاريخ العطل</label><input id="fDate" type="date"></div>
+<div class="field"><label>نوع / وصف العطل</label><input id="fDesc" placeholder="مثال: صوت في الفرامل"></div><div class="field"><label>درجة الأهمية</label><select id="fLevel"><option>منخفضة</option><option>متوسطة</option><option>عالية</option><option>حرجة</option></select></div>
+<div class="field"><label>الإجراء المطلوب</label><input id="fAction" placeholder="مثال: فحص وتغيير القطعة"></div><div class="field"><label>المسؤول</label><input id="fOwner" placeholder="اسم المسؤول"></div>
+<div class="field full"><label>صورة العطل / الفاتورة (اختياري)</label><input type="file" id="fImg" accept="image/*"></div><div class="field"><label>حالة المعالجة</label><select id="fState"><option>بانتظار الإصلاح</option><option>قيد الإصلاح</option><option>تم الإصلاح</option></select></div></div><div class="actions"><button class="primary" onclick="saveFault()">حفظ العطل</button><button class="btn secondary" onclick="closeModal('faultModal')">إلغاء</button></div></div></div>
+<div class="modal" id="driverModal"><div class="dialog"><h2 id="dTitle">إضافة سائق</h2><div class="formgrid"><div class="field"><label>الاسم *</label><input id="dName"></div><div class="field"><label>رقم الجوال</label><input id="dPhone" type="tel" inputmode="tel"></div><div class="field"><label>انتهاء الرخصة</label><input id="dLic" type="date"></div><div class="field full"><label>ملاحظات</label><textarea id="dNotes" rows="2"></textarea></div></div><div class="actions"><button class="primary" onclick="saveDriver()">حفظ</button><button class="btn secondary" onclick="closeModal('driverModal')">إلغاء</button></div></div></div>
+<div class="modal" id="logModal"><div class="dialog"><h2 id="logTitle"></h2><div id="logBody"></div><div class="actions"><button class="btn secondary" onclick="closeModal('logModal')">إغلاق</button></div></div></div>
+<div class="modal" id="imgModal"><div class="dialog"><img id="imgView" alt=""><div class="actions"><button class="btn secondary" onclick="closeModal('imgModal')">إغلاق</button></div></div></div>
+<div class="modal" id="askModal" style="z-index:9998"><div class="dialog"><p id="askMsg" style="font-size:16px"></p><div class="actions"><button class="btn danger" id="askYes">تأكيد</button><button class="btn secondary" id="askNo">إلغاء</button></div></div></div>
+<script>
+const $=id=>document.getElementById(id);
+function ask(m){return new Promise(r=>{$('askMsg').textContent=m;const M=$('askModal');M.classList.add('show');const d=v=>{M.classList.remove('show');r(v)};$('askYes').onclick=()=>d(true);$('askNo').onclick=()=>d(false)})}
+function toast(m){let t=$('toast');if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#e9ad42;color:#1b1608;padding:10px 16px;border-radius:10px;z-index:9999;font-weight:bold;max-width:90%;text-align:center';document.body.appendChild(t)}t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3000)}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const load=k=>{try{const a=JSON.parse(localStorage.getItem(k));return Array.isArray(a)?a.filter(x=>x&&typeof x==='object'):[]}catch(e){return[]}};
+let vehicles=load('fleetVehicles'),faults=load('fleetFaults'),drivers=load('fleetDrivers'),editId=null,editDid=null;
+const STATES=['بانتظار الإصلاح','قيد الإصلاح','تم الإصلاح'];
+function norm(){drivers.forEach(d=>{d.id=d.id||uid()});vehicles.forEach(v=>{v.id=v.id||uid();if(v.driver&&!drivers.some(d=>d.id===v.driver))v.driver=''});faults.forEach(f=>{f.id=f.id||uid();if(!f.vid){const v=vehicles.find(x=>x.plate===f.plate);f.vid=v?v.id:null}});faults=faults.filter(f=>vehicles.some(v=>v.id===f.vid))}
+norm();
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const fmt=d=>d?String(d).split('-').reverse().join('/'):'—';
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+let DB=null,UID=null,dbReady=false,imgSaved=new Set(),saveT=null;
+const setSync=t=>{const e=$('syncState');if(e)e.textContent=t};
+const strip=()=>faults.map(({img,...r})=>({...r,hasImg:!!img}));
+function localSave(){try{localStorage.setItem('fleetVehicles',JSON.stringify(vehicles));localStorage.setItem('fleetFaults',JSON.stringify(dbReady?strip():faults));localStorage.setItem('fleetDrivers',JSON.stringify(drivers))}catch(e){if(!dbReady)toast('تعذر حفظ البيانات في المتصفح، صدّر نسخة احتياطية.')}}
+const col=()=>DB.collection('data/users/'+UID),clean=x=>JSON.parse(JSON.stringify(x));
+function cloudSave(){if(!dbReady)return;clearTimeout(saveT);saveT=setTimeout(async()=>{try{
+for(const f of faults)if(f.img&&!imgSaved.has(f.id)){await col().doc('i_'+f.id).set({d:f.img});imgSaved.add(f.id)}
+for(const id of [...imgSaved])if(!faults.some(f=>f.id===id&&f.img)){await col().doc('i_'+id).delete();imgSaved.delete(id)}
+await col().doc('vehicles').set({list:clean(vehicles)});await col().doc('drivers').set({list:clean(drivers)});await col().doc('faults').set({list:clean(strip())});
+setSync('☁ محفوظ في حسابك')}catch(e){setSync('⚠ تعذر الحفظ السحابي، البيانات في المتصفح فقط')}},600)}
+async function initDb(){try{if(!window.claude)return;const u=await claude.use('user'),d=await claude.use('db');if(!u||!d)return;DB=d;UID=await u.id();if(!UID)return;
+const r=await Promise.all(['vehicles','drivers','faults'].map(k=>col().doc(k).get())),has=r.some(x=>x.exists);
+if(has){vehicles=(r[0].data()||{}).list||[];drivers=(r[1].data()||{}).list||[];faults=(r[2].data()||{}).list||[];
+await Promise.all(faults.filter(f=>f.hasImg).map(async f=>{try{const x=await col().doc('i_'+f.id).get();f.img=x.exists?x.data().d:'';if(f.img)imgSaved.add(f.id)}catch(e){}}));norm()}
+dbReady=true;if(has){localSave();render();setSync('☁ محفوظ في حسابك')}else if(vehicles.length||drivers.length||faults.length){setSync('☁ جارٍ نقل بياناتك لحسابك…');cloudSave()}else setSync('☁ الحفظ في حسابك مفعّل')}catch(e){}}
+function persist(){localSave();cloudSave();render()}
+function showSection(id){['dashboard','fleet','faults','drivers','reports'].forEach(x=>$(x).style.display=x===id?'block':'none');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.s===id));render()}
+function closeModal(id){$(id).classList.remove('show')}
+function openVehicle(id){editId=id||null;const v=vehicles.find(x=>x.id===id)||{};const m={vPlate:'plate',vName:'name',vType:'type',vModel:'model',vStatus:'status',vService:'service',vNext:'next',vNotes:'notes'};for(const k in m)$(k).value=v[m[k]]||(k==='vType'?'سيارة':k==='vStatus'?'عاملة':'');$('vDriver').innerHTML='<option value="">— بدون سائق —</option>'+drivers.map(d=>`<option value="${esc(d.id)}">${esc(d.name)}</option>`).join('');$('vDriver').value=v.driver||'';$('vTitle').textContent=id?'تعديل المركبة':'إضافة مركبة جديدة';$('vehicleModal').classList.add('show')}
+function saveVehicle(){const plate=$('vPlate').value.trim();if(!plate){toast('رقم المركبة أو اللوحة مطلوب');return}
+if(vehicles.some(v=>v.id!==editId&&String(v.plate).toLowerCase()===plate.toLowerCase())){toast('رقم المركبة مسجل مسبقاً');return}
+const d={plate,name:$('vName').value.trim(),type:$('vType').value,model:$('vModel').value.trim(),status:$('vStatus').value,driver:$('vDriver').value,service:$('vService').value,next:$('vNext').value,notes:$('vNotes').value.trim()};
+const old=editId?vehicles.find(v=>v.id===editId):null,dn=x=>dname(x)||'بدون سائق';if(old){if((old.driver||'')!==d.driver)(old.hist=old.hist||[]).push({d:today(),t:'تغيير السائق إلى: '+dn(d.driver)});Object.assign(old,d)}else vehicles.push({id:uid(),...d,hist:[{d:today(),t:'إضافة المركبة'+(d.driver?' — السائق: '+dn(d.driver):'')}]});closeModal('vehicleModal');persist()}
+function openFault(){if(!vehicles.length){toast('أضف مركبة أولاً');return}$('fVehicle').innerHTML=vehicles.map(v=>`<option value="${esc(v.id)}">${esc(v.plate)} — ${esc(v.name||v.type)}</option>`).join('');['fDesc','fAction','fOwner','fImg'].forEach(x=>$(x).value='');$('fLevel').value='منخفضة';$('fState').value=STATES[0];$('fDate').value=today();$('faultModal').classList.add('show')}
+async function saveFault(){const desc=$('fDesc').value.trim();if(!desc){toast('اكتب وصف العطل');return}const v=vehicles.find(x=>x.id===$('fVehicle').value);if(!v)return;
+const img=await shrink($('fImg').files[0]);faults.unshift({id:uid(),vid:v.id,img,date:$('fDate').value,desc,level:$('fLevel').value,action:$('fAction').value.trim(),owner:$('fOwner').value.trim(),state:$('fState').value});
+if($('fState').value!=='تم الإصلاح')v.status='متعطلة';closeModal('faultModal');persist()}
+function setFaultState(id,st){const f=faults.find(x=>x.id===id);if(!f)return;f.state=st;const v=vehicles.find(x=>x.id===f.vid);if(v){const open=faults.some(x=>x.vid===v.id&&x.state!=='تم الإصلاح');if(open&&v.status==='عاملة')v.status='متعطلة';if(!open&&v.status==='متعطلة')v.status='عاملة'}persist()}
+async function removeFault(id){if(await ask('هل تريد حذف هذا العطل؟')){const f=faults.find(x=>x.id===id);if(f)setFaultState(id,'تم الإصلاح');faults=faults.filter(x=>x.id!==id);persist()}}
+function toggleStatus(id){const v=vehicles.find(x=>x.id===id);if(!v)return;const o=['عاملة','متعطلة','في الصيانة'];v.status=o[(o.indexOf(v.status)+1)%3];persist()}
+async function removeVehicle(id){if(await ask('سيتم حذف المركبة وكل أعطالها. متابعة؟')){vehicles=vehicles.filter(v=>v.id!==id);faults=faults.filter(f=>f.vid!==id);persist()}}
+const plateOf=f=>{const v=vehicles.find(x=>x.id===f.vid);return v?v.plate:'—'};
+const lvl=l=>l==='حرجة'?'bad':l==='عالية'?'warn':l==='متوسطة'?'mid':'low';
+function render(){const t=today(),cnt=s=>vehicles.filter(v=>v.status===s).length,working=cnt('عاملة'),broken=cnt('متعطلة'),maint=cnt('في الصيانة');
+const late=vehicles.filter(v=>v.next&&v.next<t).sort((a,b)=>a.next.localeCompare(b.next)),soon=vehicles.filter(v=>v.next&&v.next>=t).sort((a,b)=>a.next.localeCompare(b.next));
+const need=vehicles.filter(v=>v.status==='في الصيانة'||(v.next&&v.next<t)).length,openF=faults.filter(f=>f.state!=='تم الإصلاح').length;
+$('total').textContent=vehicles.length;$('working').textContent=working;$('broken').textContent=broken;$('maintenance').textContent=need;
+$('fleetSummary').innerHTML=`<b>${vehicles.length}</b> مركبة مسجلة<br>🟢 عاملة: ${working}<br>🔴 متعطلة: ${broken}<br>🟠 في الصيانة: ${maint}`;
+const types=['سيارة','شاحنة','وايت','معدات','أخرى'],cs=types.map(x=>vehicles.filter(v=>v.type===x).length),mx=Math.max(1,...cs);
+$('typeBars').innerHTML=types.map((x,i)=>`<div class="bar"><b>${cs[i]}</b><i style="height:${Math.max(8,Math.round(cs[i]/mx*60))}px"></i>${x}</div>`).join('');
+let a='';if(late.length)a+=`<span class="late">⚠ ${late.length} متأخرة عن موعد الصيانة:</span><br>`+late.slice(0,3).map(v=>esc(v.plate)+' — '+esc(fmt(v.next))).join('<br>')+'<br>';
+if(soon.length)a+=`${soon.length} موعد صيانة قادم:<br>`+soon.slice(0,3).map(v=>esc(v.plate)+' — '+esc(fmt(v.next))).join('<br>');
+$('alerts').innerHTML=a||'لا توجد مواعيد صيانة مسجلة.';
+const q=($('search').value||'').toLowerCase(),sf=$('statusFilter').value,tf=$('typeFilter').value;
+const list=vehicles.filter(v=>(!q||(v.plate+' '+(v.name||'')).toLowerCase().includes(q))&&(!sf||v.status===sf)&&(!tf||v.type===tf));
+$('vehiclesBody').innerHTML=list.map(v=>`<tr><td>${esc(v.plate)}<br><small>${esc(v.name)}</small>${v.driver?`<br><small>👤 ${esc(dname(v.driver))}</small>`:''}${v.notes?`<br><small>📝 ${esc(v.notes)}</small>`:''}</td><td>${esc(v.type)}</td><td>${esc(v.model)}</td><td><span class="pill ${v.status==='عاملة'?'ok':v.status==='متعطلة'?'bad':'warn'}">${esc(v.status)}</span></td><td>${esc(fmt(v.service))}</td><td class="${v.next&&v.next<t?'late':''}">${esc(fmt(v.next))}</td><td><button class="btn secondary" data-act="log" data-id="${esc(v.id)}">السجل</button> <button class="btn secondary" data-act="edit" data-id="${esc(v.id)}">تعديل</button> <button class="btn secondary" data-act="toggle" data-id="${esc(v.id)}">تغيير الحالة</button> <button class="btn danger" data-act="del" data-id="${esc(v.id)}">حذف</button></td></tr>`).join('')||'<tr><td colspan="7" class="empty">لا توجد مركبات مطابقة. ابدأ بإضافة أول مركبة.</td></tr>';
+$('faultsBody').innerHTML=faults.map(f=>`<tr><td>${esc(plateOf(f))}</td><td>${esc(fmt(f.date))}</td><td>${esc(f.desc)}${f.img?`<img class="thumb" src="${f.img}" data-act="img" data-id="${esc(f.id)}" alt="">`:''}</td><td><span class="pill ${lvl(f.level)}">${esc(f.level)}</span></td><td>${esc(f.action)||'—'}</td><td>${esc(f.owner)||'—'}</td><td><select class="fstate" data-id="${esc(f.id)}">${STATES.map(x=>`<option${x===f.state?' selected':''}>${x}</option>`).join('')}</select></td><td><button class="btn danger" data-act="delf" data-id="${esc(f.id)}">حذف</button></td></tr>`).join('')||'<tr><td colspan="8" class="empty">لا توجد أعطال مسجلة.</td></tr>';
+$('recentFaults').innerHTML=faults.length?faults.slice(0,4).map(f=>`<p>⚠ <b>${esc(plateOf(f))}</b> — ${esc(f.desc)} <span class="pill warn">${esc(f.state)}</span></p>`).join(''):'<div class="empty">لا توجد أعطال مسجلة.</div>';
+renderExtra();$('reportText').innerHTML=`إجمالي المركبات: <b>${vehicles.length}</b><br>العاملة: <b>${working}</b> — المتعطلة: <b>${broken}</b> — في الصيانة: <b>${maint}</b><br>متأخرة عن الصيانة: <b>${late.length}</b><br>عدد الأعطال المسجلة: <b>${faults.length}</b> (المفتوحة: ${openF})<br>الأعطال التي تم إصلاحها: <b>${faults.length-openF}</b>`}
+const dname=id=>{const d=drivers.find(x=>x.id===id);return d?d.name:''};
+function shrink(f){return new Promise(res=>{if(!f)return res('');const r=new FileReader();r.onerror=()=>res('');r.onload=()=>{const i=new Image();i.onerror=()=>res('');i.onload=()=>{const k=Math.min(1,900/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.7))};i.src=r.result};r.readAsDataURL(f)})}
+function showImg(id){const f=faults.find(x=>x.id===id);if(f&&f.img){$('imgView').src=f.img;$('imgModal').classList.add('show')}}
+function openDriver(id){editDid=id||null;const d=drivers.find(x=>x.id===id)||{};$('dName').value=d.name||'';$('dPhone').value=d.phone||'';$('dLic').value=d.lic||'';$('dNotes').value=d.notes||'';$('dTitle').textContent=id?'تعديل السائق':'إضافة سائق';$('driverModal').classList.add('show')}
+function saveDriver(){const name=$('dName').value.trim();if(!name){toast('اسم السائق مطلوب');return}const x={name,phone:$('dPhone').value.trim(),lic:$('dLic').value,notes:$('dNotes').value.trim()};if(editDid)Object.assign(drivers.find(d=>d.id===editDid),x);else drivers.push({id:uid(),...x});closeModal('driverModal');persist()}
+async function removeDriver(id){if(await ask('حذف السائق؟ ستُفصل مركباته عنه.')){drivers=drivers.filter(d=>d.id!==id);norm();persist()}}
+function openLog(id){const v=vehicles.find(x=>x.id===id);if(!v)return;const ev=[...(v.hist||[]).map(h=>({d:h.d,t:h.t})),...faults.filter(f=>f.vid===id).map(f=>({d:f.date,t:`⚠ عطل (${f.level}): ${f.desc} — ${f.state}`})),...(v.service?[{d:v.service,t:'🔧 آخر صيانة'}]:[]),...(v.next?[{d:v.next,t:'📅 الصيانة القادمة'}]:[])].sort((a,b)=>(b.d||'').localeCompare(a.d||''));
+$('logTitle').textContent='سجل المركبة: '+v.plate;$('logBody').innerHTML=`<p>${esc(v.name||'')} ${esc(v.type)} ${esc(v.model||'')} — ${esc(v.status)}<br>السائق: ${esc(dname(v.driver)||'—')}</p>`+(ev.map(e=>`<div class="ev"><b>${esc(fmt(e.d))}</b>${esc(e.t)}</div>`).join('')||'<div class="empty">لا أحداث مسجلة.</div>');$('logModal').classList.add('show')}
+function repFaults(){const a=$('rFrom').value,b=$('rTo').value;return faults.filter(f=>(!a||f.date>=a)&&(!b||f.date<=b))}
+function renderExtra(){const t=today();
+const kp=(n,l,c)=>`<div class="kpi" style="--c:${c}"><b>${n}</b><span>${l}</span></div>`,cn=x=>vehicles.filter(v=>v.status===x).length;
+$('kpis').innerHTML=kp(vehicles.length,'إجمالي المركبات','#16233a')+kp(cn('عاملة'),'عاملة','#20c77a')+kp(cn('متعطلة'),'متعطلة','#ff565d')+kp(cn('في الصيانة'),'في الصيانة','#f2a51a')+kp(vehicles.filter(v=>v.next&&v.next<t).length,'متأخرة عن الصيانة','#a1202a');
+$('printMeta').textContent='تاريخ التقرير: '+fmt(t)+' — الفترة: '+($('rFrom').value||$('rTo').value?fmt($('rFrom').value)+' إلى '+fmt($('rTo').value):'كل الفترات');
+$('repVeh').innerHTML=vehicles.map(v=>`<tr><td>${esc(v.plate)}</td><td>${esc(v.name)||'—'}</td><td>${esc(v.type)}</td><td>${esc(dname(v.driver))||'—'}</td><td><span class="pill ${v.status==='عاملة'?'ok':v.status==='متعطلة'?'bad':'warn'}">${esc(v.status)}</span></td><td>${esc(fmt(v.service))}</td><td>${esc(fmt(v.next))}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">لا توجد مركبات.</td></tr>';
+$('driversBody').innerHTML=drivers.map(d=>`<tr><td>${esc(d.name)}${d.notes?`<br><small>${esc(d.notes)}</small>`:''}</td><td>${esc(d.phone)||'—'}</td><td class="${d.lic&&d.lic<t?'late':''}">${esc(fmt(d.lic))}</td><td>${vehicles.filter(v=>v.driver===d.id).map(v=>esc(v.plate)).join('، ')||'—'}</td><td><button class="btn secondary" data-act="dedit" data-id="${esc(d.id)}">تعديل</button> <button class="btn danger" data-act="ddel" data-id="${esc(d.id)}">حذف</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty">لا يوجد سائقون. أضف أول سائق.</td></tr>';
+const rf=repFaults(),L=['حرجة','عالية','متوسطة','منخفضة'],c=L.map(l=>rf.filter(f=>f.level===l).length),m=Math.max(1,...c);
+$('repBars').innerHTML=L.map((l,i)=>`<div class="bar"><b>${c[i]}</b><i style="height:${Math.max(8,Math.round(c[i]/m*60))}px;background:${['#ff565d','#f2a51a','#438cff','#9aa7ba'][i]}"></i>${l}</div>`).join('');
+$('repBody').innerHTML=rf.map(f=>`<tr><td>${esc(plateOf(f))}</td><td>${esc(fmt(f.date))}</td><td>${esc(f.desc)}</td><td><span class="pill ${lvl(f.level)}">${esc(f.level)}</span></td><td><span class="pill ${f.state==='تم الإصلاح'?'ok':f.state==='قيد الإصلاح'?'warn':'bad'}">${esc(f.state)}</span></td></tr>`).join('')||'<tr><td colspan="5" class="empty">لا أعطال في هذه الفترة.</td></tr>'}
+function csv(rows,name){const t=rows.map(r=>r.map(x=>{let v=String(x==null?'':x);if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}).join(',')).join('\r\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+t],{type:'text/csv;charset=utf-8'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportXlsVehicles(){csv([['اللوحة','الاسم','النوع','الموديل','الحالة','السائق','آخر صيانة','الصيانة القادمة','ملاحظات'],...vehicles.map(v=>[v.plate,v.name,v.type,v.model,v.status,dname(v.driver),v.service,v.next,v.notes])],'vehicles.csv')}
+function exportXlsFaults(){csv([['المركبة','التاريخ','الوصف','الأهمية','الإجراء','المسؤول','الحالة'],...repFaults().map(f=>[plateOf(f),f.date,f.desc,f.level,f.action,f.owner,f.state])],'faults.csv')}
+function printReport(){showSection('reports');setTimeout(()=>window.print(),150)}
+function exportData(){const blob=new Blob([JSON.stringify({vehicles,faults,drivers},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='fleet-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=async()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.vehicles)||!Array.isArray(d.faults))throw 0;if(!await ask('سيتم استبدال البيانات الحالية. متابعة؟'))return;vehicles=d.vehicles.filter(x=>x&&x.plate);faults=d.faults.filter(x=>x&&typeof x==='object');drivers=Array.isArray(d.drivers)?d.drivers.filter(x=>x&&typeof x==='object'):[];norm();persist()}catch(e){toast('ملف غير صالح')}};r.readAsText(f);inp.value=''}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b){const id=b.dataset.id,a=b.dataset.act;if(a==='edit')openVehicle(id);else if(a==='toggle')toggleStatus(id);else if(a==='del')removeVehicle(id);else if(a==='delf')removeFault(id);else if(a==='log')openLog(id);else if(a==='img')showImg(id);else if(a==='dedit')openDriver(id);else if(a==='ddel')removeDriver(id)}if(e.target.classList.contains('modal'))e.target.classList.remove('show')});
+document.addEventListener('change',e=>{if(e.target.classList.contains('fstate'))setFaultState(e.target.dataset.id,e.target.value)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal.show').forEach(m=>m.classList.remove('show'))});
+document.querySelectorAll('.field').forEach(f=>{const l=f.querySelector('label'),i=f.querySelector('input,select,textarea');if(l&&i)l.htmlFor=i.id});
+setSync('⏳ جارٍ تفعيل الحفظ في حسابك…');render();initDb();setTimeout(()=>{if(!dbReady)setSync('⚠ محفوظ في هذا المتصفح فقط')},12000);
+</script></body></html>
